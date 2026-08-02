@@ -23,3 +23,8 @@ Future-updates.md
 TO-DO.md
 .planning/
 .claude/
+
+# --- tooling local do fork ---
+.venv-rpc/
+src/hydra_python_rpc.egg-info/
+_*.log
