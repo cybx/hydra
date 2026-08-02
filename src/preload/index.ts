@@ -495,6 +495,11 @@ contextBridge.exposeInMainWorld("electron", {
   addLocalDownloadSource: () => ipcRenderer.invoke("addLocalDownloadSource"),
   getLocalDownloadOptions: (title: string) =>
     ipcRenderer.invoke("getLocalDownloadOptions", title),
+  getPublishHosts: () => ipcRenderer.invoke("getPublishHosts"),
+  inspectLocalSource: (sourceId: string) =>
+    ipcRenderer.invoke("inspectLocalSource", sourceId),
+  uploadLocalSource: (sourceId: string, hostId: string) =>
+    ipcRenderer.invoke("uploadLocalSource", sourceId, hostId),
   removeDownloadSource: (url: string, removeAll?: boolean) =>
     ipcRenderer.invoke("removeDownloadSource", url, removeAll),
   getDownloadSources: () => ipcRenderer.invoke("getDownloadSources"),

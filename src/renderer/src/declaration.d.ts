@@ -663,6 +663,16 @@ declare global {
     addDownloadSource: (url: string) => Promise<DownloadSource>;
     addLocalDownloadSource: () => Promise<DownloadSource | null>;
     getLocalDownloadOptions: (title: string) => Promise<GameRepack[]>;
+    getPublishHosts: () => Promise<
+      { id: string; name: string; retention: string }[]
+    >;
+    inspectLocalSource: (
+      sourceId: string
+    ) => Promise<{ hasPasskey: boolean; name: string }>;
+    uploadLocalSource: (
+      sourceId: string,
+      hostId: string
+    ) => Promise<{ url: string }>;
     removeDownloadSource: (
       removeAll = false,
       downloadSourceId?: string

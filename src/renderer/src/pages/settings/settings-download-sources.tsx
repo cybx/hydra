@@ -14,8 +14,10 @@ import {
   PlusCircleIcon,
   SyncIcon,
   TrashIcon,
+  UploadIcon,
 } from "@primer/octicons-react";
 import { AddDownloadSourceModal } from "./add-download-source-modal";
+import { PublishLocalSourceModal } from "./publish-local-source-modal";
 import { useAppDispatch, useToast } from "@renderer/hooks";
 import { useFormat } from "@renderer/hooks/use-format";
 import { DownloadSourceStatus } from "@shared";
@@ -39,6 +41,9 @@ export function SettingsDownloadSources() {
     useState(false);
   const [isRemovingDownloadSource, setIsRemovingDownloadSource] =
     useState(false);
+  const [publishSource, setPublishSource] = useState<DownloadSource | null>(
+    null
+  );
 
   const { sourceUrl, clearSourceUrl } = useContext(settingsContext);
 
@@ -191,6 +196,12 @@ export function SettingsDownloadSources() {
         onClose={handleModalClose}
         onAddDownloadSource={handleAddDownloadSource}
       />
+      <PublishLocalSourceModal
+        visible={publishSource !== null}
+        source={publishSource}
+        onClose={() => setPublishSource(null)}
+        onPublished={handleAddDownloadSource}
+      />
       <ConfirmationModal
         cancelButtonLabel={t("cancel_button_confirmation_delete_all_sources")}
         confirmButtonLabel={t("confirm_button_confirmation_delete_all_sources")}
@@ -310,15 +321,28 @@ export function SettingsDownloadSources() {
                 theme="dark"
                 disabled
                 rightContent={
-                  <Button
-                    type="button"
-                    theme="outline"
-                    onClick={() => handleRemoveSource(downloadSource)}
-                    disabled={isRemovingDownloadSource}
-                  >
-                    <NoEntryIcon />
-                    {t("remove_download_source")}
-                  </Button>
+                  <div className="settings-download-sources__source-actions">
+                    {downloadSource.isLocal && (
+                      <Button
+                        type="button"
+                        theme="outline"
+                        onClick={() => setPublishSource(downloadSource)}
+                        disabled={isRemovingDownloadSource}
+                      >
+                        <UploadIcon />
+                        {t("publish_to_catalogue")}
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      theme="outline"
+                      onClick={() => handleRemoveSource(downloadSource)}
+                      disabled={isRemovingDownloadSource}
+                    >
+                      <NoEntryIcon />
+                      {t("remove_download_source")}
+                    </Button>
+                  </div>
                 }
               />
             </li>

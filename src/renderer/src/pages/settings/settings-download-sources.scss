@@ -27,6 +27,11 @@
     gap: globals.$spacing-unit;
   }
 
+  &__source-actions {
+    display: flex;
+    gap: globals.$spacing-unit;
+  }
+
   &__item {
     display: flex;
     flex-direction: column;

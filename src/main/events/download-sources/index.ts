@@ -1,6 +1,9 @@
 import "./add-download-source";
 import "./add-local-download-source";
 import "./get-local-download-options";
+import "./get-publish-hosts";
+import "./inspect-local-source";
+import "./upload-local-source";
 import "./get-download-sources-check-baseline";
 import "./get-download-sources-since-value";
 import "./get-download-sources";

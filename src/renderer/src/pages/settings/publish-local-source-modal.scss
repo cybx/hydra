@@ -1,0 +1,49 @@
+@use "../../scss/globals.scss";
+
+.publish-local-source-modal {
+  display: flex;
+  flex-direction: column;
+  gap: globals.$spacing-unit;
+  min-width: 500px;
+
+  &__explain {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+  }
+
+  &__retention {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  &__warning {
+    display: flex;
+    align-items: flex-start;
+    gap: globals.$spacing-unit;
+    padding: calc(globals.$spacing-unit * 1.5);
+    border-radius: 8px;
+    background-color: rgba(226, 84, 84, 0.12);
+    border: 1px solid rgba(226, 84, 84, 0.4);
+    color: #f0a5a5;
+    font-size: 12px;
+    line-height: 1.4;
+
+    svg {
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+  }
+
+  &__error {
+    font-size: 12px;
+    color: #f0a5a5;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: globals.$spacing-unit;
+    margin-top: globals.$spacing-unit;
+  }
+}
