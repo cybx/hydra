@@ -91,6 +91,7 @@ export class GamepadService {
   private readonly axisTriggerThreshold = 0.5;
 
   private isPolling = false;
+  private windowFocused = true;
   private animationFrameId: number | null = null;
   private activeGamepadIndex: number | null = null;
   private lastActiveGamepadSwitchTime = 0;
@@ -148,6 +149,13 @@ export class GamepadService {
       "gamepaddisconnected",
       this.handleGamepadDisconnection
     );
+
+    globalThis.window.addEventListener("blur", this.handleWindowBlur);
+    globalThis.window.addEventListener("focus", this.handleWindowFocus);
+
+    // The window may already be in the background when the service starts, so
+    // seed the flag instead of assuming focus.
+    this.windowFocused = globalThis.document?.hasFocus?.() ?? true;
   }
 
   private createInitialStickState(): GamepadStickState {
@@ -238,19 +246,43 @@ export class GamepadService {
   };
 
   private pollGamepads() {
-    const gamepads = globalThis.navigator.getGamepads();
+    // Reading the gamepad only makes sense while the window has focus.
+    //
+    // requestAnimationFrame already throttles when the window is hidden, but
+    // that is not enough on the Steam Deck: the Steam overlay draws on top of
+    // the window without hiding it, so frames keep coming and the app would
+    // keep consuming the controller while the user navigates the Steam menu —
+    // moving the selection in both places at once.
+    if (this.windowFocused) {
+      const gamepads = globalThis.navigator.getGamepads();
 
-    for (const gamepad of gamepads) {
-      if (!gamepad) continue;
+      for (const gamepad of gamepads) {
+        if (!gamepad) continue;
 
-      this.gamepads.set(gamepad.index, gamepad);
-      this.updateGamepadState(gamepad.index, gamepad);
+        this.gamepads.set(gamepad.index, gamepad);
+        this.updateGamepadState(gamepad.index, gamepad);
+      }
     }
 
     this.animationFrameId = globalThis.requestAnimationFrame(() =>
       this.pollGamepads()
     );
   }
+
+  private readonly handleWindowBlur = () => {
+    if (!this.windowFocused) return;
+
+    this.windowFocused = false;
+
+    // Same cleanup setInputEnabled(false) does: a button held when focus is
+    // lost would otherwise keep its repeat timer running in the background.
+    this.clearAllTimers();
+    this.recentAcceptedInputs = [];
+  };
+
+  private readonly handleWindowFocus = () => {
+    this.windowFocused = true;
+  };
 
   private startPolling() {
     if (this.isPolling) return;
@@ -1340,6 +1372,8 @@ export class GamepadService {
       "gamepaddisconnected",
       this.handleGamepadDisconnection
     );
+    globalThis.window.removeEventListener("blur", this.handleWindowBlur);
+    globalThis.window.removeEventListener("focus", this.handleWindowFocus);
     this.gamepads.clear();
     this.gamepadStates.clear();
     this.buttonPressCallbacks.clear();
